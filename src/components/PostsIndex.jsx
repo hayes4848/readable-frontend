@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 class PostsIndex extends React.Component {
 
@@ -8,6 +9,18 @@ class PostsIndex extends React.Component {
     )
   }
 
-}
 
-export default PostsIndex
+
+}
+const mapStateToProps = () =>( 
+  {
+
+  }
+)
+
+const mapDispatchToProps = () => (
+{
+
+}
+)
+export default connect(mapStateToProps, mapDispatchToProps)(PostsIndex)
