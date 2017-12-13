@@ -2,7 +2,7 @@ import _ from 'lodash/fp'
 export const HANDLE_ALL_POSTS = 'HANDLE_ALL_POSTS'
 
 const initialState = {
-  posts: '', 
+  posts: [], 
   comments: '',
 }
 
