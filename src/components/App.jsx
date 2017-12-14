@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import Navigation from './Navigation';
 import { Route } from 'react-router-dom';
+import { withRouter } from  'react-router-dom'
 import PostsIndex from './PostsIndex';
 import * as ReadableAPI from '../lib/ReadableAPI';
 import '../assets/App.css';
 import { connect } from 'react-redux';
-import { HANDLE_ALL_POSTS } from '../reducers/index.js';
+import { HANDLE_ALL_POSTS, HANDLE_ALL_CATEGORIES } from '../reducers/index.js';
 import {Helmet} from "react-helmet";
+import ReactPosts from './ReactPosts';
+import ReduxPosts from './ReduxPosts';
+import UdacityPosts from './UdacityPosts';
 
 class App extends Component {
   
@@ -15,6 +19,10 @@ class App extends Component {
       .then((posts) => {
         this.props.handleAllPosts(posts)
       })
+    ReadableAPI.getAllCategories()
+      .then((categories) => {
+        this.props.handleAllCategories(categories)
+      })  
   }
 
   render() {
@@ -30,6 +38,15 @@ class App extends Component {
         <Navigation />
         <Route exact path="/" render={() => (
           <PostsIndex />
+        )} />
+        <Route path="/react" render={ ({ history }) => (
+          <ReactPosts />
+        )} />
+        <Route path="/redux" render={ ({ history }) => (
+          <ReduxPosts />
+        )} />
+        <Route path="/udacity" render={ ({ history }) => (
+          <UdacityPosts />
         )} />
       </div>
     );
@@ -49,8 +66,14 @@ const mapDispatchToProps = dispatch => (
       type: HANDLE_ALL_POSTS, 
       posts: posts
     })
+  }, 
+  handleAllCategories: categories => {
+    dispatch({
+      type: HANDLE_ALL_CATEGORIES, 
+      categories: categories
+    })
   }
 }
 )
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
