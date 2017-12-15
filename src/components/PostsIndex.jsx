@@ -1,10 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { withRouter } from  'react-router-dom'
+import { Link, withRouter } from 'react-router-dom';
+import { HANDLE_ALL_POSTS, HANDLE_ALL_CATEGORIES } from '../reducers/index.js';
+import * as ReadableAPI from '../lib/ReadableAPI';
 
 class PostsIndex extends React.Component {
 
+  componentDidMount(){
+    ReadableAPI.getAllPosts()
+      .then((posts) => {
+        this.props.handleAllPosts(posts)
+      })
+    ReadableAPI.getAllCategories()
+      .then((categories) => {
+        this.props.handleAllCategories(categories)
+      })  
+  }
   
   render(){
     let postsList = this.props.posts.map((post) => {
@@ -26,7 +37,7 @@ class PostsIndex extends React.Component {
 
     let categoriesList = this.props.categories.map((cat) => {
       return (
-        <span key={cat.name}><Link to={cat.path}> {cat.name} </Link>|</span>
+        <span key={cat.name}><Link to={`/category/${cat.name}`}> {cat.name} </Link>|</span>
       )
     })
     console.log(this.props)
@@ -66,9 +77,21 @@ const mapStateToProps = state =>(
   }
 )
 
-const mapDispatchToProps = () => (
+const mapDispatchToProps = dispatch => (
 {
-
+  handleAllPosts: posts => {
+    dispatch({
+      type: HANDLE_ALL_POSTS, 
+      posts: posts
+    })
+  }, 
+  handleAllCategories: categories => {
+    dispatch({
+      type: HANDLE_ALL_CATEGORIES, 
+      categories: categories
+    })
+  }
 }
 )
+
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(PostsIndex))
