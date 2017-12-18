@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import { HANDLE_ALL_POSTS, HANDLE_ALL_CATEGORIES } from '../reducers/index.js';
+import { HANDLE_ALL_POSTS, HANDLE_ALL_CATEGORIES, HANDLE_POST_VOTE } from '../reducers/index.js';
 import * as ReadableAPI from '../lib/ReadableAPI';
 
 class PostsIndex extends React.Component {
@@ -16,13 +16,24 @@ class PostsIndex extends React.Component {
         this.props.handleAllCategories(categories)
       })  
   }
+
+  postVote(option, postID) {
+    ReadableAPI.voteOnPost(postID, option)
+      .then((response) => {
+        this.props.handlePostVote(response)
+      })
+  }
   
   render(){
     let postsList = this.props.posts.map((post) => {
       return( 
               <tr key={post.id}>
                 
-                  <td>{post.voteScore}</td>
+                  <td className="vote-div">
+                    <a onClick={() => {this.postVote('upVote', post.id)}} className="vote-block-children">UP </a>
+                    <span className="vote-block-children">{post.voteScore}</span>
+                    <a onClick={() => { this.postVote('downVote', post.id)}} className="vote-block-children"> DOWN</a>
+                  </td>
                   <td>{post.category}</td>
                   <td>{post.author}</td>
                   <td>{post.title}</td>
@@ -89,6 +100,12 @@ const mapDispatchToProps = dispatch => (
     dispatch({
       type: HANDLE_ALL_CATEGORIES, 
       categories: categories
+    })
+  }, 
+  handlePostVote: option => {
+    dispatch({
+      type: HANDLE_POST_VOTE, 
+      option: option
     })
   }
 }
