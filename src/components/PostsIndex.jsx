@@ -39,21 +39,23 @@ class PostsIndex extends React.Component {
                   <td>{post.title}</td>
                   <td>{post.body}</td>
                   <td>{post.commentCount}</td>
-                  <td><button className="waves-effect waves-light btn">Edit</button>
-                      <button className="waves-effect waves-light btn">Delete</button>
+                  <td>
+                    <Link to={`/posts/${post.id}`} className="waves-effect waves-light btn">EDIT</Link>
+                    <button onClick={console.log('delete me')} className="waves-effect waves-light btn">Delete</button>
                   </td>
-                  <td><Link to='' className=''>Read More</Link></td>
+                  <td><Link to={`/${post.category}/${post.id}`} className=''>Read More</Link></td>
               </tr>)
     })
 
     let categoriesList = this.props.categories.map((cat) => {
       return (
-        <span key={cat.name}><Link to={`/category/${cat.name}`}> {cat.name} </Link>|</span>
+        <span key={cat.name}><Link to={`/${cat.name}`}> {cat.name} </Link>|</span>
       )
     })
     console.log(this.props)
     return(
       <div className="container">
+        <Link to='/new' className="waves-effect waves-light btn" >ADD A NEW POST</Link>
         <h3>Posts Index Page</h3>
         <div className="">View Articles by Category: |{categoriesList}</div>
 
@@ -107,7 +109,13 @@ const mapDispatchToProps = dispatch => (
       type: HANDLE_POST_VOTE, 
       option: option
     })
-  }
+  }, 
+  // handlePostDelete: post => {
+  //   dispatch({
+  //     type: HANDLE_POST_DELETE, 
+  //     post: post
+  //   })
+  // }
 }
 )
 

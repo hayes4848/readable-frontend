@@ -2,11 +2,14 @@ import _ from 'lodash/fp'
 export const HANDLE_ALL_POSTS = 'HANDLE_ALL_POSTS'
 export const HANDLE_ALL_CATEGORIES = 'HANDLE_ALL_CATEGORIES'
 export const HANDLE_POST_VOTE = 'HANDLE_POST_VOTE'
+export const HANDLE_SINGLE_POST = 'HANDLE_SINGLE_POST'
+export const HANDLE_POST_COMMENTS = 'HANDLE_POST_COMMENTS'
 
 const initialState = {
   posts: [], 
   comments: [],
-  categories: []
+  categories: [], 
+  singlePost: {}
 }
 
 function reducer(state = initialState, action){
@@ -31,7 +34,17 @@ function reducer(state = initialState, action){
             return post
           }
         })
-      }                    
+      }
+    case HANDLE_SINGLE_POST:
+      return{
+        ...state, 
+        ['singlePost']: action.post
+      }  
+    case HANDLE_POST_COMMENTS:
+      return {
+        ...state, 
+        ['comments']: action.comments
+      }                     
     default:
       return state
         

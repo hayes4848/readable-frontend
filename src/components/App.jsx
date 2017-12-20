@@ -8,6 +8,8 @@ import '../assets/App.css';
 import { connect } from 'react-redux';
 import {Helmet} from "react-helmet";
 import CategoryPosts from './CategoryPosts';
+import PostDetails from './PostDetails';
+import NewPost from './NewPost';
 
 class App extends Component {
 
@@ -25,8 +27,14 @@ class App extends Component {
         <Route exact path="/" render={() => (
           <PostsIndex />
         )} />
-        <Route path="/category/:category_name" render={ ({history}) => (
+        <Route exact path="/:category_name" render={ ({history}) => (
           <CategoryPosts />
+        )} />
+        <Route exact path="/new" render={ ({history}) => (
+          <NewPost />
+        )} />
+        <Route exact path="/:category/:post_id" render={ ({history}) => (
+          <PostDetails />
         )} />
       </div>
     );
