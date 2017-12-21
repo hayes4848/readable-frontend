@@ -61,3 +61,14 @@ export const voteOnComment = (commentID, option) =>
     fetch(`${api}/comments/${commentID}`, { method: 'POST', headers, option: option })
       .then(res => res.json())
 //need a method to fetch a single comment
+
+export const createPost = (post) => 
+  fetch(`${api}/posts`, { 
+    method: 'POST', 
+    body: JSON.stringify(post),
+    headers: {
+      ...headers,
+      'Content-Type': 'application/json'
+    }
+     })
+    .then(res => res.json())

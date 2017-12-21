@@ -41,7 +41,7 @@ class PostsIndex extends React.Component {
                   <td>{post.commentCount}</td>
                   <td>
                     <Link to={`/posts/${post.id}`} className="waves-effect waves-light btn">EDIT</Link>
-                    <button onClick={console.log('delete me')} className="waves-effect waves-light btn">Delete</button>
+                    <button onClick={() => {console.log('delete me')}} className="waves-effect waves-light btn">Delete</button>
                   </td>
                   <td><Link to={`/${post.category}/${post.id}`} className=''>Read More</Link></td>
               </tr>)
