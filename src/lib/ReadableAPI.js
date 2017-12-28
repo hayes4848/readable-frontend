@@ -58,7 +58,14 @@ export const deletePostComment = (commentID) =>
 
 //need a method to vote on a comment  
 export const voteOnComment = (commentID, option) => 
-    fetch(`${api}/comments/${commentID}`, { method: 'POST', headers, option: option })
+    fetch(`${api}/comments/${commentID}`, {
+     method: 'POST', 
+     headers: {
+      ...headers, 
+      'Content-Type': 'application/json'
+     }, 
+     body: JSON.stringify({option}) 
+   })
       .then(res => res.json())
 //need a method to fetch a single comment
 
@@ -72,3 +79,14 @@ export const createPost = (post) =>
     }
      })
     .then(res => res.json())
+
+export const createComment = (comment) => 
+  fetch(`${api}/comments`, { 
+    method: 'POST', 
+    body: JSON.stringify(comment),
+    headers: {
+      ...headers,
+      'Content-Type': 'application/json'
+    }
+     })
+    .then(res => res.json())    

@@ -1,10 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import { HANDLE_ALL_POSTS, HANDLE_ALL_CATEGORIES, HANDLE_POST_VOTE, HANDLE_SINGLE_POST, HANDLE_POST_COMMENTS } from '../reducers/index.js';
+import { HANDLE_ALL_POSTS, HANDLE_ALL_CATEGORIES, HANDLE_POST_VOTE, HANDLE_SINGLE_POST, HANDLE_POST_COMMENTS, HANDLE_ADD_COMMENT, HANDLE_COMMENT_VOTE } from '../reducers/index.js';
 import * as ReadableAPI from '../lib/ReadableAPI';
+import serializeForm from 'form-serialize';
+import uuidv1 from 'uuid/v1';
 
 class PostDetails extends React.Component {
+
+  state = {
+    commentButton: 'show', 
+    commentForm: 'hidden'
+  }
 
   componentDidMount(){
     ReadableAPI.getSinglePost(this.props.match.params.post_id)
@@ -17,11 +24,44 @@ class PostDetails extends React.Component {
       })  
   }
 
+  showCommentDiv(){
+    this.setState({
+      commentButton: 'hidden', 
+      commentForm: 'show'
+    })
+  }
+
+  handleSubmit = (e) => {
+    e.preventDefault()
+    const values = serializeForm(e.target, { hash: true })
+    values['timestamp'] = Date.now()
+    values['id'] = uuidv1()
+    ReadableAPI.createComment(values)
+      .then( (response) => {
+        this.props.handleAddComment(response)
+        this.setState({
+          commentButton: 'show', 
+          commentForm: 'hidden'
+        })
+      })
+  }
+  commentVote(option, commentId) {
+    ReadableAPI.voteOnComment(commentId, option)
+      .then((response) => {
+        this.props.handleCommentVote(response)
+      })
+  }
+
   
   render(){
     let postComments = this.props.comments.map((comment) => {
       return(
         <tr key={comment.id}>
+          <td className="vote-div">
+            <a onClick={() => {this.commentVote('upVote', comment.id)}} className="vote-block-children">UP </a>
+            <span className="vote-block-children">{comment.voteScore}</span>
+            <a onClick={() => { this.commentVote('downVote', comment.id)}} className="vote-block-children"> DOWN</a>
+          </td>
           <td>{comment.author}</td>
           <td>{comment.voteScore}</td>
           <td>{comment.body}</td>
@@ -29,7 +69,6 @@ class PostDetails extends React.Component {
         </tr>
       )
     })
-    console.log(this.props.post)
     return(
       <div>
         <h3>Posts Details Page</h3>
@@ -38,9 +77,25 @@ class PostDetails extends React.Component {
         <h4>Written on: {this.props.post.timestamp}</h4>
         <p>{this.props.post.body}</p>
         <div>comments ({this.props.post.commentCount})</div>
+        <div>
+          <button className={`waves-effect waves-light btn ${this.state.commentButton}`} onClick={() => {this.showCommentDiv()}}>Add Comment </button>
+        <div className={`comment-div ${this.state.commentForm}`}>
+          <form onSubmit={this.handleSubmit}>
+            <div className="row">
+              <div className="input-field col s12">
+                <input name="parentId" type="hidden" defaultValue={this.props.post.id} />
+                <input name="author" className="col s4" placeholder="author"></input>
+                <input name="body" className="col s6" placeholder="message"></input>
+                <button className=" col s2 waves-effect waves-light btn">Submit</button>
+              </div>
+            </div>
+          </form>
+        </div>  
+        </div>
         <table className="striped">
         <thead>
           <tr>
+            <th>voting</th>
             <th>author</th>
             <th>points</th>
             <th>message</th>
@@ -76,7 +131,19 @@ const mapDispatchToProps = dispatch => (
       type: HANDLE_POST_COMMENTS, 
       comments: comments
     })
-  }
+  }, 
+  handleAddComment: comment => {
+    dispatch({
+      type: HANDLE_ADD_COMMENT, 
+      comment: comment
+    })
+  },
+  handleCommentVote: option => {
+    dispatch({
+      type: HANDLE_COMMENT_VOTE, 
+      option: option
+    })
+  },
 }
 )
 

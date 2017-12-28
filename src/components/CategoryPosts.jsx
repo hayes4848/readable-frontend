@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import * as ReadableAPI from '../lib/ReadableAPI';
-import { HANDLE_ALL_POSTS } from '../reducers/index.js';
+import { HANDLE_ALL_POSTS, HANDLE_POST_VOTE } from '../reducers/index.js';
 
 class CategoryPosts extends React.Component {
 
@@ -13,20 +13,56 @@ class CategoryPosts extends React.Component {
       })
   }
 
+  postVote(option, postID) {
+    ReadableAPI.voteOnPost(postID, option)
+      .then((response) => {
+        this.props.handlePostVote(response)
+      })
+  }
+
   render(){
     let posts = this.props.posts.map((post) => {
      return( 
-      <div key={post.title}>
-        <h4>{post.title} by {post.author}</h4>
-        <p>{post.body}</p>
-      </div>
-      )
+      <tr key={post.title}>
+        <td className="vote-div">
+          <a onClick={() => {this.postVote('upVote', post.id)}} className="vote-block-children">UP </a>
+          <span className="vote-block-children">{post.voteScore}</span>
+          <a onClick={() => { this.postVote('downVote', post.id)}} className="vote-block-children"> DOWN</a>
+        </td>
+        <td>{post.category}</td>
+        <td>{post.author}</td>
+        <td>{post.title}</td>
+        <td>{post.body}</td>
+        <td>{post.commentCount}</td>
+        <td>
+          <Link to={`/posts/${post.id}`} className="waves-effect waves-light btn">EDIT</Link>
+          <button onClick={() => {console.log('delete me')}} className="waves-effect waves-light btn">Delete</button>
+        </td>
+        <td><Link to={`/${post.category}/${post.id}`} className=''>Read More</Link></td>
+      </tr>)
     })
-
     return(
+      this.props.match.url !== '/new' &&
       <div>
         <h3>{this.props.match.params.category_name} posts</h3>
-        {posts}
+        <Link to='/new' className="waves-effect waves-light btn" >ADD A NEW POST</Link>
+        <table className="striped">
+        <thead>
+          <tr>
+            <th>Vote Here</th>
+            <th>Category</th>
+            <th>Author</th>
+            <th>Title</th>
+            <th>Body</th>
+            <th>Comment Count</th>
+            <th>Actions</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody>  
+          {posts}
+        </tbody>  
+        </table>
       </div>
     )
   }
@@ -46,7 +82,13 @@ const mapDispatchToProps = dispatch => (
         type: HANDLE_ALL_POSTS, 
         posts: posts
       })
-    }
+    }, 
+    handlePostVote: option => {
+      dispatch({
+        type: HANDLE_POST_VOTE, 
+        option: option
+      })
+    },  
   }
 )
 

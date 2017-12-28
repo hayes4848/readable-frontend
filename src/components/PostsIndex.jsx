@@ -27,7 +27,7 @@ class PostsIndex extends React.Component {
   render(){
     let postsList = this.props.posts.map((post) => {
       return( 
-              <tr key={post.id}>
+              <tr key={post.id + 2}>
                 
                   <td className="vote-div">
                     <a onClick={() => {this.postVote('upVote', post.id)}} className="vote-block-children">UP </a>
@@ -52,9 +52,8 @@ class PostsIndex extends React.Component {
         <span key={cat.name}><Link to={`/${cat.name}`}> {cat.name} </Link>|</span>
       )
     })
-    console.log(this.props)
     return(
-      <div className="container">
+      <div className="">
         <Link to='/new' className="waves-effect waves-light btn" >ADD A NEW POST</Link>
         <h3>Posts Index Page</h3>
         <div className="">View Articles by Category: |{categoriesList}</div>

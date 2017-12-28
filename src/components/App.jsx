@@ -27,11 +27,11 @@ class App extends Component {
         <Route exact path="/" render={() => (
           <PostsIndex />
         )} />
-        <Route exact path="/:category_name" render={ ({history}) => (
-          <CategoryPosts />
-        )} />
         <Route exact path="/new" render={ ({history}) => (
           <NewPost />
+        )} />
+        <Route exact path="/:category_name" render={ ({history}) => (
+          <CategoryPosts />
         )} />
         <Route exact path="/:category/:post_id" render={ ({history}) => (
           <PostDetails />
