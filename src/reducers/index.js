@@ -8,6 +8,8 @@ export const HANDLE_SINGLE_POST = 'HANDLE_SINGLE_POST'
 export const HANDLE_POST_COMMENTS = 'HANDLE_POST_COMMENTS'
 export const SORT_ALL_POSTS = 'SORT_ALL_POSTS'
 export const HANDLE_ADD_COMMENT = 'HANDLE_ADD_COMMENT'
+export const HANDLE_POST_DELETE = 'HANDLE_POST_DELETE'
+export const HANDLE_COMMENT_DELETE = 'HANDLE_COMMENT_DELETE'
 
 const initialState = {
   posts: [], 
@@ -67,7 +69,17 @@ function reducer(state = initialState, action){
       } 
     case HANDLE_ADD_COMMENT:
       state.comments.push(action.comment)
-      return state                      
+      return state 
+    case HANDLE_POST_DELETE: 
+        return {
+        ...state,
+        posts: state.posts.filter(p => p.id !== action.post.id),
+      } 
+    case HANDLE_COMMENT_DELETE: 
+      return {
+        ...state, 
+        comments: state.comments.filter(c => c.id !== action.comment.id)
+      }                        
     default:
       return state
         

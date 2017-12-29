@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import { HANDLE_ALL_POSTS, HANDLE_ALL_CATEGORIES, HANDLE_POST_VOTE, HANDLE_SINGLE_POST, HANDLE_POST_COMMENTS, HANDLE_ADD_COMMENT, HANDLE_COMMENT_VOTE } from '../reducers/index.js';
+import { HANDLE_ALL_POSTS, HANDLE_ALL_CATEGORIES, HANDLE_POST_VOTE, HANDLE_SINGLE_POST, HANDLE_POST_COMMENTS, HANDLE_ADD_COMMENT, HANDLE_COMMENT_VOTE, HANDLE_COMMENT_DELETE } from '../reducers/index.js';
 import * as ReadableAPI from '../lib/ReadableAPI';
 import serializeForm from 'form-serialize';
 import uuidv1 from 'uuid/v1';
@@ -45,10 +45,18 @@ class PostDetails extends React.Component {
         })
       })
   }
+  
   commentVote(option, commentId) {
     ReadableAPI.voteOnComment(commentId, option)
       .then((response) => {
         this.props.handleCommentVote(response)
+      })
+  }
+
+  commentDelete(commentID) {
+    ReadableAPI.deletePostComment(commentID)
+      .then((response) => {
+        this.props.handleCommentDelete(response)
       })
   }
 
@@ -65,7 +73,10 @@ class PostDetails extends React.Component {
           <td>{comment.author}</td>
           <td>{comment.voteScore}</td>
           <td>{comment.body}</td>
-          <td>{}</td>
+          <td>
+            <button className="waves-effect waves-light btn">EDIT</button>
+          <button onClick={() => {this.commentDelete(comment.id)}} className="waves-effect waves-light btn">Delete</button>
+          </td>
         </tr>
       )
     })
@@ -144,6 +155,12 @@ const mapDispatchToProps = dispatch => (
       option: option
     })
   },
+  handleCommentDelete: comment => {
+    dispatch({
+      type: HANDLE_COMMENT_DELETE, 
+      comment: comment
+    })
+  }
 }
 )
 

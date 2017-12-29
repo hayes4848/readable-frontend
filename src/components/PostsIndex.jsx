@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import { HANDLE_ALL_POSTS, HANDLE_ALL_CATEGORIES, HANDLE_POST_VOTE } from '../reducers/index.js';
+import { HANDLE_ALL_POSTS, HANDLE_ALL_CATEGORIES, HANDLE_POST_VOTE, HANDLE_POST_DELETE } from '../reducers/index.js';
 import * as ReadableAPI from '../lib/ReadableAPI';
 
 class PostsIndex extends React.Component {
@@ -23,6 +23,14 @@ class PostsIndex extends React.Component {
         this.props.handlePostVote(response)
       })
   }
+
+  deletePost(postID) {
+    ReadableAPI.deletePost(postID)
+    .then((response) => {
+      console.log(response)
+      this.props.handlePostDelete(response)
+    })
+  }
   
   render(){
     let postsList = this.props.posts.map((post) => {
@@ -41,7 +49,7 @@ class PostsIndex extends React.Component {
                   <td>{post.commentCount}</td>
                   <td>
                     <Link to={`/posts/${post.id}`} className="waves-effect waves-light btn">EDIT</Link>
-                    <button onClick={() => {console.log('delete me')}} className="waves-effect waves-light btn">Delete</button>
+                    <button onClick={() => {this.deletePost(post.id)}} className="waves-effect waves-light btn">Delete</button>
                   </td>
                   <td><Link to={`/${post.category}/${post.id}`} className=''>Read More</Link></td>
               </tr>)
@@ -109,12 +117,12 @@ const mapDispatchToProps = dispatch => (
       option: option
     })
   }, 
-  // handlePostDelete: post => {
-  //   dispatch({
-  //     type: HANDLE_POST_DELETE, 
-  //     post: post
-  //   })
-  // }
+  handlePostDelete: post => {
+    dispatch({
+      type: HANDLE_POST_DELETE, 
+      post: post
+    })
+  }
 }
 )
 
