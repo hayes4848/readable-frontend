@@ -1,16 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link, withRouter } from 'react-router-dom';
-import { HANDLE_ALL_POSTS, HANDLE_ALL_CATEGORIES, HANDLE_POST_VOTE, HANDLE_SINGLE_POST, HANDLE_POST_COMMENTS, HANDLE_ADD_COMMENT, HANDLE_COMMENT_VOTE, HANDLE_COMMENT_DELETE } from '../reducers/index.js';
+import { withRouter } from 'react-router-dom';
+import { HANDLE_POST_VOTE, HANDLE_SINGLE_POST, HANDLE_POST_COMMENTS, HANDLE_ADD_COMMENT, HANDLE_COMMENT_VOTE, HANDLE_COMMENT_DELETE } from '../reducers/index.js';
 import * as ReadableAPI from '../lib/ReadableAPI';
 import serializeForm from 'form-serialize';
 import uuidv1 from 'uuid/v1';
+import Timestamp from 'react-timestamp';
 
 class PostDetails extends React.Component {
 
   state = {
     commentButton: 'show', 
-    commentForm: 'hidden'
+    commentForm: 'hidden', 
+    updateable: ''
   }
 
   componentDidMount(){
@@ -45,6 +47,22 @@ class PostDetails extends React.Component {
         })
       })
   }
+
+  handleUpdateSubmit = (e) => {
+    e.preventDefault()
+    const values = serializeForm(e.target, { hash: true })
+    console.log(values)
+    values['timestamp'] = Date.now()
+    values['id'] = uuidv1()
+    ReadableAPI.createComment(values)
+      .then( (response) => {
+        this.props.handleAddComment(response)
+        this.setState({
+          commentButton: 'show', 
+          commentForm: 'hidden'
+        })
+      })
+  }
   
   commentVote(option, commentId) {
     ReadableAPI.voteOnComment(commentId, option)
@@ -60,32 +78,46 @@ class PostDetails extends React.Component {
       })
   }
 
+  showUpdateForm(commentID) {
+    this.setState({
+      updateable: commentID
+    })
+  }
+
   
   render(){
     let postComments = this.props.comments.map((comment) => {
+      if(comment.id === this.state.updateable){
+        return (
+          <form onSubmit={this.handleUpdateSubmit} key={comment.id} className="row">
+            <div><input className="col s4" defaultValue={comment.author} name='author' /></div>
+            <div><input className="col s5" defaultValue={comment.body} name='body' /></div>
+            <div><button className="col s3 waves-effect waves-light btn">Update</button></div>
+          </form>
+        )
+      }else{
       return(
-        <tr key={comment.id}>
-          <td className="vote-div">
+        <div className="row" key={comment.id}>
+          <div className="col s3">
             <a onClick={() => {this.commentVote('upVote', comment.id)}} className="vote-block-children">UP </a>
             <span className="vote-block-children">{comment.voteScore}</span>
             <a onClick={() => { this.commentVote('downVote', comment.id)}} className="vote-block-children"> DOWN</a>
-          </td>
-          <td>{comment.author}</td>
-          <td>{comment.voteScore}</td>
-          <td>{comment.body}</td>
-          <td>
-            <button className="waves-effect waves-light btn">EDIT</button>
+          </div>
+          <div className="col s3">{comment.author}</div>
+          <div className="col s3">{comment.body}</div>
+          <div className="col s3">
+            <button onClick={() => {this.showUpdateForm(comment.id)}} className="waves-effect waves-light btn">EDIT</button>
           <button onClick={() => {this.commentDelete(comment.id)}} className="waves-effect waves-light btn">Delete</button>
-          </td>
-        </tr>
-      )
+          </div>
+        </div>
+      )}
     })
     return(
       <div>
         <h3>Posts Details Page</h3>
         <h4>Title: {this.props.post.title}</h4>
         <h4>Author: {this.props.post.author}</h4>
-        <h4>Written on: {this.props.post.timestamp}</h4>
+        <h4>Written on: <Timestamp time={this.props.post.timestamp} /></h4>
         <p>{this.props.post.body}</p>
         <div>comments ({this.props.post.commentCount})</div>
         <div>
@@ -103,20 +135,15 @@ class PostDetails extends React.Component {
           </form>
         </div>  
         </div>
-        <table className="striped">
-        <thead>
-          <tr>
-            <th>voting</th>
-            <th>author</th>
-            <th>points</th>
-            <th>message</th>
-            <th>other things</th>
-          </tr>
-        </thead>
-        <tbody>
+          <div className="pretend-table-head row">
+            <div className="col s3">voting</div>
+            <div className="col s3">author</div>
+            <div className="col s3">message</div>
+            <div className="col s3">other things</div>
+          </div>
+        <div className="row">
           {postComments}
-        </tbody>
-        </table>
+        </div>
       </div>
     )
   }

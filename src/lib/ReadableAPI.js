@@ -77,8 +77,8 @@ export const createPost = (post) =>
       ...headers,
       'Content-Type': 'application/json'
     }
-     })
-    .then(res => res.json())
+  })
+  .then(res => res.json())
 
 export const createComment = (comment) => 
   fetch(`${api}/comments`, { 
@@ -88,5 +88,8 @@ export const createComment = (comment) =>
       ...headers,
       'Content-Type': 'application/json'
     }
-     })
-    .then(res => res.json())    
+  })
+  .then(res => res.json()) 
+
+export const updateComment = (comment) => 
+  fetch()     

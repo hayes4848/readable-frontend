@@ -1,16 +1,20 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import * as ReadableAPI from '../lib/ReadableAPI';
-import { HANDLE_ALL_POSTS, HANDLE_POST_VOTE } from '../reducers/index.js';
+import { HANDLE_ALL_POSTS, HANDLE_POST_VOTE, HANDLE_CATEGORY_CHANGE } from '../reducers/index.js';
 
 class CategoryPosts extends React.Component {
 
   componentDidMount(){
+    console.log(`link param: ${this.props.match.params.category_name}`)
+    if(this.props.match.params.category_name !== this.props.selectedCategory){
+      this.props.handleCategoryChange(this.props.match.params.category_name)
+    }
     ReadableAPI.getCategoryPosts(this.props.match.params.category_name)
       .then( (posts) => {
         this.props.handleAllPosts(posts)
-      })
+    })
   }
 
   postVote(option, postID) {
@@ -20,7 +24,17 @@ class CategoryPosts extends React.Component {
       })
   }
 
+  changeRandom(){
+    this.forceUpdate()
+  }
+
   render(){
+    let categoriesList = this.props.categories.map((cat) => {
+      return (
+        <span key={cat.name}><Link onClick={this.changeRandom} to={`/${cat.name}`}> {cat.name} </Link>|</span>
+      )
+    })
+
     let posts = this.props.posts.map((post) => {
      return( 
       <tr key={post.title}>
@@ -46,6 +60,15 @@ class CategoryPosts extends React.Component {
       <div>
         <h3>{this.props.match.params.category_name} posts</h3>
         <Link to='/new' className="waves-effect waves-light btn" >ADD A NEW POST</Link>
+        <div className="">View Articles by Category: |{categoriesList}</div>
+        <div>
+          <select className="browser-default">
+            <option value='newest'>newest first</option>
+            <option value='oldest'>oldest first</option>
+            <option value='highest'>highest rated first</option>
+            <option value='lowest'>lowest rated first</option>
+          </select>
+        </div>
         <table className="striped">
         <thead>
           <tr>
@@ -71,7 +94,9 @@ class CategoryPosts extends React.Component {
 
 const mapStateToProps = state =>( 
   {
-    posts: state.posts
+    posts: state.posts, 
+    categories: state.categories, 
+    selectedCategory: state.selectedCategory
   }
 )
 
@@ -88,7 +113,13 @@ const mapDispatchToProps = dispatch => (
         type: HANDLE_POST_VOTE, 
         option: option
       })
-    },  
+    }, 
+    handleCategoryChange: category => {
+      dispatch({
+        type: HANDLE_CATEGORY_CHANGE, 
+        category: category
+      })
+    } 
   }
 )
 

@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import React from 'react';
+import { withRouter } from 'react-router-dom';
 import * as ReadableAPI from '../lib/ReadableAPI';
 import serializeForm from 'form-serialize';
 import uuidv1 from 'uuid/v1';
