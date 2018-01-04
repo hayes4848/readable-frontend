@@ -10,6 +10,7 @@ import {Helmet} from "react-helmet";
 import CategoryPosts from './CategoryPosts';
 import PostDetails from './PostDetails';
 import NewPost from './NewPost';
+import EditPost from './EditPost';
 
 class App extends Component {
 
@@ -35,6 +36,9 @@ class App extends Component {
         )} />
         <Route exact path="/:category/:post_id" render={ ({history}) => (
           <PostDetails />
+        )} />
+        <Route exact path="/edit" render={ ({history}) => (
+          <EditPost />
         )} />
       </div>
     );

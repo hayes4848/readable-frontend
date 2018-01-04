@@ -5,15 +5,14 @@ import serializeForm from 'form-serialize';
 import uuidv1 from 'uuid/v1';
 import { connect } from 'react-redux';
 
-class NewPost extends React.Component {
+class EditPost extends React.Component {
 
   handleSubmit = (e) => {
     e.preventDefault()
     const values = serializeForm(e.target, { hash: true })
-    values['timestamp'] = Date.now()
-    values['id'] = uuidv1()
+    // values['id'] = uuidv1()
     console.log(values)
-    ReadableAPI.createPost(values)
+    ReadableAPI.updatePost(values)
       .then( (response) => {
         return this.props.history.push("/");
       })
@@ -30,7 +29,8 @@ class NewPost extends React.Component {
         </select>
           <div className="row">
             <div className="input-field col s12">
-              <input name="author" value={this.props.singlePost.author} className="col s6" type="text" placeholder="Author"/>
+              <input type="hidden" value={this.props.singlePost.id} name="id" />
+              <input name="author" readOnly="true" value={this.props.singlePost.author} className="col s6" type="text" placeholder="Author"/>
               <input name="title" defaultValue={this.props.singlePost.title} className="col s6" type="text" placeholder="Title"/>
             </div>
           </div>
@@ -44,7 +44,7 @@ class NewPost extends React.Component {
               <option value="udacity">Udacity</option>
             </select>
           </div>
-          <button className="waves-effect waves-light btn">Submit</button>
+          <button className="waves-effect waves-light btn">Update</button>
         </form>
       </div>
     )
@@ -57,4 +57,4 @@ const mapStateToProps = state =>(
   }
 )
 
-export default withRouter(connect(mapStateToProps)(NewPost));
+export default withRouter(connect(mapStateToProps)(EditPost));

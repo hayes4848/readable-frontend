@@ -12,6 +12,8 @@ export const HANDLE_POST_DELETE = 'HANDLE_POST_DELETE'
 export const HANDLE_COMMENT_DELETE = 'HANDLE_COMMENT_DELETE'
 export const HANDLE_SORT_POST = 'HANDLE_SORT_POST'
 export const HANDLE_CATEGORY_CHANGE = 'HANDLE_CATEGORY_CHANGE'
+export const HANDLE_UPDATE_COMMENT = 'HANDLE_UPDATE_COMMENT'
+export const HANDLE_EDIT_POST = 'HANDLE_EDIT_POST'
 
 const initialState = {
   posts: [], 
@@ -111,7 +113,24 @@ function reducer(state = initialState, action){
       return {
         ...state, 
         'selectedCategory': action.category
-      }                         
+      } 
+    case HANDLE_UPDATE_COMMENT: 
+      return {
+        ...state, 
+        'comments': state.comments.map( (comment) => {
+          if(action.comment.commentID === comment.id) {
+            comment.body = action.comment.body
+            return comment
+          }else{
+            return comment
+          }
+        })
+      } 
+    case HANDLE_EDIT_POST: 
+      return {
+        ...state, 
+        'singlePost': action.post
+      }                          
     default:
       return state
         

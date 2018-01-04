@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import { HANDLE_ALL_POSTS, HANDLE_ALL_CATEGORIES, HANDLE_POST_VOTE, HANDLE_POST_DELETE, HANDLE_SORT_POST } from '../reducers/index.js';
+import { HANDLE_ALL_POSTS, HANDLE_ALL_CATEGORIES, HANDLE_POST_VOTE, HANDLE_POST_DELETE, HANDLE_SORT_POST, HANDLE_EDIT_POST } from '../reducers/index.js';
 import * as ReadableAPI from '../lib/ReadableAPI';
 import Time from 'react-time';
 
@@ -32,9 +32,13 @@ class PostsIndex extends React.Component {
     })
   }
 
+  editPost(post) {
+    this.props.handleEditPost(post)
+    this.props.history.push('/edit')
+  }
+
 sortPosts(event) {
     this.props.handlePostSort(event.target.value)
-    // console.log(event.target.value)
   }
   
   render(){
@@ -54,7 +58,7 @@ sortPosts(event) {
                   <td>{post.body}</td>
                   <td>{post.commentCount}</td>
                   <td>
-                    <Link to={`/posts/${post.id}`} className="waves-effect waves-light btn">EDIT</Link>
+                    <button onClick={() => {this.editPost(post)}} className="waves-effect waves-light btn">EDIT</button>
                     <button onClick={() => {this.deletePost(post.id)}} className="waves-effect waves-light btn">Delete</button>
                   </td>
                   <td><Link to={`/${post.category}/${post.id}`} className=''>Read More</Link></td>
@@ -142,6 +146,12 @@ const mapDispatchToProps = dispatch => (
     dispatch({
       type: HANDLE_SORT_POST, 
       sort: sort
+    })
+  }, 
+  handleEditPost: post => {
+    dispatch({
+      type: HANDLE_EDIT_POST, 
+      post: post
     })
   }
 }

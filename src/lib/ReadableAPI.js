@@ -92,4 +92,21 @@ export const createComment = (comment) =>
   .then(res => res.json()) 
 
 export const updateComment = (comment) => 
-  fetch()     
+  fetch(`${api}/comments/${comment.commentID}`, {
+    method: 'PUT', 
+    body: JSON.stringify(comment), 
+    headers: {
+      ...headers,
+      'Content-Type': 'application/json'
+    }
+  })  
+
+export const updatePost = (post) => 
+  fetch(`${api}/posts/${post.id}`, {
+    method: 'PUT', 
+    body: JSON.stringify(post), 
+    headers: {
+      ...headers,
+      'Content-Type': 'application/json'
+    }
+  })       

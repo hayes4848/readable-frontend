@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { HANDLE_POST_VOTE, HANDLE_SINGLE_POST, HANDLE_POST_COMMENTS, HANDLE_ADD_COMMENT, HANDLE_COMMENT_VOTE, HANDLE_COMMENT_DELETE } from '../reducers/index.js';
+import { HANDLE_POST_VOTE, HANDLE_SINGLE_POST, HANDLE_POST_COMMENTS, HANDLE_ADD_COMMENT, HANDLE_COMMENT_VOTE, HANDLE_COMMENT_DELETE, HANDLE_UPDATE_COMMENT, HANDLE_EDIT_POST, HANDLE_POST_DELETE } from '../reducers/index.js';
 import * as ReadableAPI from '../lib/ReadableAPI';
 import serializeForm from 'form-serialize';
 import uuidv1 from 'uuid/v1';
@@ -51,15 +51,13 @@ class PostDetails extends React.Component {
   handleUpdateSubmit = (e) => {
     e.preventDefault()
     const values = serializeForm(e.target, { hash: true })
-    console.log(values)
     values['timestamp'] = Date.now()
-    values['id'] = uuidv1()
-    ReadableAPI.createComment(values)
+    ReadableAPI.updateComment(values)
       .then( (response) => {
-        this.props.handleAddComment(response)
+        // console.log(response.body)
+        this.props.handleUpdateComment(values)
         this.setState({
-          commentButton: 'show', 
-          commentForm: 'hidden'
+          updateable: ''
         })
       })
   }
@@ -84,20 +82,34 @@ class PostDetails extends React.Component {
     })
   }
 
+  deletePost(postID) {
+    ReadableAPI.deletePost(postID)
+    .then((response) => {
+      this.props.handlePostDelete(response)
+      this.props.history.push('/')
+    })
+  }
+
+  editPost(post) {
+    this.props.handleEditPost(post)
+    this.props.history.push('/edit')
+  }
+
   
   render(){
     let postComments = this.props.comments.map((comment) => {
       if(comment.id === this.state.updateable){
         return (
           <form onSubmit={this.handleUpdateSubmit} key={comment.id} className="row">
-            <div><input className="col s4" defaultValue={comment.author} name='author' /></div>
+            <input type="hidden" defaultValue={comment.id} name="commentID" />
+            <div className="col s3">{comment.author}</div>
             <div><input className="col s5" defaultValue={comment.body} name='body' /></div>
             <div><button className="col s3 waves-effect waves-light btn">Update</button></div>
           </form>
         )
       }else{
       return(
-        <div className="row" key={comment.id}>
+        <div className="row" key={comment.id + 2}>
           <div className="col s3">
             <a onClick={() => {this.commentVote('upVote', comment.id)}} className="vote-block-children">UP </a>
             <span className="vote-block-children">{comment.voteScore}</span>
@@ -115,10 +127,12 @@ class PostDetails extends React.Component {
     return(
       <div>
         <h3>Posts Details Page</h3>
-        <h4>Title: {this.props.post.title}</h4>
-        <h4>Author: {this.props.post.author}</h4>
-        <h4>Written on: <Timestamp time={this.props.post.timestamp} /></h4>
-        <p>{this.props.post.body}</p>
+        <button onClick={() => {this.editPost(this.props.post)}} className="waves-effect waves-light btn">EDIT</button>
+        <button onClick={() => {this.deletePost(this.props.post.id)}} className="waves-effect waves-light btn">DELETE</button>
+        <p>Title: {this.props.post.title}</p>
+        <p>Author: {this.props.post.author}</p>
+        <p>Written on: <Timestamp time={this.props.post.timestamp} /></p>
+        <h5>{this.props.post.body}</h5>
         <div>comments ({this.props.post.commentCount})</div>
         <div>
           <button className={`waves-effect waves-light btn ${this.state.commentButton}`} onClick={() => {this.showCommentDiv()}}>Add Comment </button>
@@ -187,7 +201,25 @@ const mapDispatchToProps = dispatch => (
       type: HANDLE_COMMENT_DELETE, 
       comment: comment
     })
-  }
+  }, 
+  handleUpdateComment: comment => {
+    dispatch({
+      type: HANDLE_UPDATE_COMMENT, 
+      comment: comment
+    })
+  }, 
+  handleEditPost: post => {
+    dispatch({
+      type: HANDLE_EDIT_POST, 
+      post: post
+    })
+  }, 
+  handlePostDelete: post => {
+    dispatch({
+      type: HANDLE_POST_DELETE, 
+      post: post
+    })
+  },
 }
 )
 
