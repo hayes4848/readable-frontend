@@ -56,7 +56,7 @@ class CategoryPosts extends React.Component {
       </tr>)
     })
     return(
-      this.props.match.url !== '/new' || this.props.match.url !== '/edit'  &&
+      this.props.match.url !== '/new' && this.props.match.url !== '/edit'  &&
       <div>
         <h3>{this.props.match.params.category_name} posts</h3>
         <Link to='/new' className="waves-effect waves-light btn" >ADD A NEW POST</Link>

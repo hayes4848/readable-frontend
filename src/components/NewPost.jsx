@@ -21,6 +21,7 @@ class NewPost extends React.Component {
 
   render(){
     return(
+      this.props.match.url === '/new' &&
       <div>
         <form onSubmit={this.handleSubmit}>
          <select>

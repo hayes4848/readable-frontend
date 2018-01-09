@@ -98,6 +98,7 @@ function reducer(state = initialState, action){
       } 
     case HANDLE_ADD_COMMENT:
       state.comments.push(action.comment)
+      state.singlePost.commentCount += 1
       return state 
     case HANDLE_POST_DELETE: 
         return {

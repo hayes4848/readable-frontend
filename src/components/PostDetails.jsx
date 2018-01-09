@@ -40,6 +40,7 @@ class PostDetails extends React.Component {
     values['id'] = uuidv1()
     ReadableAPI.createComment(values)
       .then( (response) => {
+        console.log(response)
         this.props.handleAddComment(response)
         this.setState({
           commentButton: 'show', 
@@ -124,42 +125,48 @@ class PostDetails extends React.Component {
         </div>
       )}
     })
-    return(
-      <div>
-        <h3>Posts Details Page</h3>
-        <button onClick={() => {this.editPost(this.props.post)}} className="waves-effect waves-light btn">EDIT</button>
-        <button onClick={() => {this.deletePost(this.props.post.id)}} className="waves-effect waves-light btn">DELETE</button>
-        <p>Title: {this.props.post.title}</p>
-        <p>Author: {this.props.post.author}</p>
-        <p>Written on: <Timestamp time={this.props.post.timestamp} /></p>
-        <h5>{this.props.post.body}</h5>
-        <div>comments ({this.props.post.commentCount})</div>
+    if(this.props.post.timestamp === undefined){
+      return (
+        <h3>POST NOT FOUND</h3>
+      )
+    }else {
+      return(
         <div>
-          <button className={`waves-effect waves-light btn ${this.state.commentButton}`} onClick={() => {this.showCommentDiv()}}>Add Comment </button>
-        <div className={`comment-div ${this.state.commentForm}`}>
-          <form onSubmit={this.handleSubmit}>
-            <div className="row">
-              <div className="input-field col s12">
-                <input name="parentId" type="hidden" defaultValue={this.props.post.id} />
-                <input name="author" className="col s4" placeholder="author"></input>
-                <input name="body" className="col s6" placeholder="message"></input>
-                <button className=" col s2 waves-effect waves-light btn">Submit</button>
+          <h3>Posts Details Page</h3>
+          <button onClick={() => {this.editPost(this.props.post)}} className="waves-effect waves-light btn">EDIT</button>
+          <button onClick={() => {this.deletePost(this.props.post.id)}} className="waves-effect waves-light btn">DELETE</button>
+          <p>Title: {this.props.post.title}</p>
+          <p>Author: {this.props.post.author}</p>
+          <p>Written on: <Timestamp time={this.props.post.timestamp} /></p>
+          <h5>{this.props.post.body}</h5>
+          <div>comments ({this.props.post.commentCount})</div>
+          <div>
+            <button className={`waves-effect waves-light btn ${this.state.commentButton}`} onClick={() => {this.showCommentDiv()}}>Add Comment </button>
+          <div className={`comment-div ${this.state.commentForm}`}>
+            <form onSubmit={this.handleSubmit}>
+              <div className="row">
+                <div className="input-field col s12">
+                  <input name="parentId" type="hidden" defaultValue={this.props.post.id} />
+                  <input name="author" className="col s4" placeholder="author"></input>
+                  <input name="body" className="col s6" placeholder="message"></input>
+                  <button className=" col s2 waves-effect waves-light btn">Submit</button>
+                </div>
               </div>
-            </div>
-          </form>
-        </div>  
-        </div>
-          <div className="pretend-table-head row">
-            <div className="col s3">voting</div>
-            <div className="col s3">author</div>
-            <div className="col s3">message</div>
-            <div className="col s3">other things</div>
+            </form>
+          </div>  
           </div>
-        <div className="row">
-          {postComments}
+            <div className="pretend-table-head row">
+              <div className="col s3">voting</div>
+              <div className="col s3">author</div>
+              <div className="col s3">message</div>
+              <div className="col s3">other things</div>
+            </div>
+          <div className="row">
+            {postComments}
+          </div>
         </div>
-      </div>
-    )
+      )
+    }
   }
 }
 

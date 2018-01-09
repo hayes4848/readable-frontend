@@ -10,8 +10,6 @@ class EditPost extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault()
     const values = serializeForm(e.target, { hash: true })
-    // values['id'] = uuidv1()
-    console.log(values)
     ReadableAPI.updatePost(values)
       .then( (response) => {
         return this.props.history.push("/");
@@ -20,6 +18,7 @@ class EditPost extends React.Component {
 
   render(){
     return(
+      this.props.match.url === '/edit' &&
       <div>
         <form onSubmit={this.handleSubmit}>
          <select>
